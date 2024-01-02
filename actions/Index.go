@@ -4,15 +4,15 @@ import "godl/console"
 import "godl/structs"
 import "godl/sites"
 
-func Download(cache *structs.Cache, base_url string, media_urls []string) bool {
+func Index(cache *structs.Cache, base_url string) []string {
 
-	var result bool = false
+	var result []string
 
 	for _, site := range sites.SitesMap {
 
 		if site.Can(base_url) {
 
-			result = site.Download(cache, base_url, media_urls)
+			result = site.Index(cache, base_url)
 
 			break
 
@@ -20,7 +20,7 @@ func Download(cache *structs.Cache, base_url string, media_urls []string) bool {
 
 	}
 
-	if result == false {
+	if len(result) == 0 {
 		console.Warn("Cannot find any Site Adapter for URL \"" + base_url + "\"")
 	}
 

@@ -36,7 +36,13 @@ func main() {
 		console.GroupEnd("")
 
 		if url != "" {
-			actions.Download(&cache, url)
+
+			urls := actions.Index(&cache, url)
+
+			if len(urls) > 0 {
+				actions.Download(&cache, url, urls)
+			}
+
 		}
 
 	}
