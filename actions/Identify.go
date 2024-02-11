@@ -1,27 +1,25 @@
 package actions
 
 import "godl/console"
-import "godl/structs"
 import "godl/sites"
 
-func Index(cache *structs.Cache, index *structs.Index, base_url string) bool {
+func Identify(base_url string) string {
 
-	var result bool = false
-	var found bool = false
+	var result string
 
 	for _, site := range sites.SitesMap {
 
 		if site.Can(base_url) {
 
-			result = site.Index(cache, index, base_url)
-			found = true
+			result = site.Identify(base_url)
+
 			break
 
 		}
 
 	}
 
-	if found == false {
+	if result == "" {
 		console.Warn("Cannot find any Site Adapter for URL \"" + base_url + "\"")
 	}
 

@@ -4,6 +4,7 @@ import "godl/structs"
 
 type Site struct {
 	Can      func(string) bool
-	Index    func(*structs.Cache, string) []string
-	Download func(*structs.Cache, string, []string) bool
+	Identify func(string) string
+	Index    func(*structs.Cache, *structs.Index, string) bool
+	Download func(*structs.Cache, *structs.Index, string) bool
 }

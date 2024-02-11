@@ -14,8 +14,6 @@ func main() {
 
 	if err == nil {
 
-		cache := structs.NewCache(cwd)
-
 		if len(os.Args) == 2 {
 
 			value := os.Args[1]
@@ -37,10 +35,23 @@ func main() {
 
 		if url != "" {
 
-			urls := actions.Index(&cache, url)
+			username := actions.Identify(url)
 
-			if len(urls) > 0 {
-				actions.Download(&cache, url, urls)
+			if username == "" {
+				console.Error("No Username!")
+				os.Exit(1)
+				// TODO: Generate random username from url hash?
+			}
+
+			cache := structs.NewCache(cwd+"/"+username)
+			index := structs.NewIndex(cwd+"/"+username)
+
+			if !index.Completed {
+				actions.Index(&cache, &index, url)
+			}
+
+			if len(index.Downloads) > 0 {
+				actions.Download(&cache, &index, url)
 			}
 
 		}

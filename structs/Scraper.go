@@ -18,6 +18,7 @@ var CONTENT_TYPES []string = []string{
 	"application/x-gzip",
 	"application/xml",
 	"application/zip",
+	"audio/mp3",
 	"image/jpeg",
 	"image/png",
 	"text/csv",
@@ -83,7 +84,7 @@ func processRequests(scraper *Scraper) {
 
 				console.Log(strconv.Itoa(len(scraper.Tasks)) + " Request Tasks left...")
 
-				time.AfterFunc(10*time.Second, func() {
+				time.AfterFunc(1*time.Second, func() {
 					processRequests(scraper)
 				})
 
@@ -329,6 +330,10 @@ func (scraper *Scraper) Send(url string, parameters map[string]string) []byte {
 }
 
 func (scraper *Scraper) Request(url string) []byte {
+
+	if scraper.Throttled == true {
+		time.Sleep(1*time.Second)
+	}
 
 	var buffer []byte
 	var content_type string

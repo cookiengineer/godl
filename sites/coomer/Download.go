@@ -5,9 +5,8 @@ import "godl/structs"
 import "godl/utils"
 import "net/url"
 import "strconv"
-import "time"
 
-func Download(cache *structs.Cache, link string, downloads []string) bool {
+func Download(cache *structs.Cache, index *structs.Index, link string) bool {
 
 	var result bool = false
 
@@ -19,37 +18,41 @@ func Download(cache *structs.Cache, link string, downloads []string) bool {
 
 		if base.Scheme == "https" && base.Host == "coomer.su" {
 
-			username := toUsername(link)
 			scraper := structs.NewScraper(cache, &map[string]string{
 				"Referer": base.Scheme + "://" + base.Host + base.Path,
 			})
+			scraper.Throttled = true
 
-			if username != "" && len(downloads) > 0 {
+			count := 0
 
-				for d := 0; d < len(downloads); d++ {
+			for url, _ := range index.Downloads {
 
-					download := downloads[d]
-					filename := utils.ToFilename(download)
+				filename := utils.ToFilename(url)
+				count++
 
-					if !cache.Exists("/" + username + "/" + filename) {
+				if !index.Exists(url) && !cache.Exists("/"+filename) {
 
-						buffer := scraper.Request(download)
+					buffer := scraper.Request(url)
 
-						if len(buffer) > 0 {
-							cache.Write("/" + username + "/" + filename, buffer)
-						}
-
-						time.Sleep(100 * time.Millisecond)
-
+					if len(buffer) > 0 {
+						cache.Write("/"+filename, buffer)
 					}
 
-					console.Progress(strconv.Itoa(d+1) + " of " + strconv.Itoa(len(downloads)) + " Downloads")
+					index.Set(url)
+					index.Write()
+
+				} else if cache.Exists("/" + filename) {
+
+					index.Set(url)
+					index.Write()
 
 				}
 
-				result = true
+				console.Progress(strconv.Itoa(count) + " of " + strconv.Itoa(len(index.Downloads)) + " Downloads")
 
 			}
+
+			result = true
 
 		}
 

@@ -5,7 +5,7 @@ import "godl/utils"
 import "net/url"
 import "strings"
 
-func toUsername(link string) string {
+func Identify(link string) string {
 
 	var result string
 
