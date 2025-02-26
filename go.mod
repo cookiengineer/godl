@@ -1,4 +1,4 @@
-module godl
+module github.com/cookiengineer/godl
 
 go 1.21.3
 
